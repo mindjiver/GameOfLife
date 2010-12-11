@@ -6,7 +6,7 @@
  * in the Software without restriction, including without limitation the right
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * furnished to do so, subject o the following conditions:
  *  
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
@@ -22,11 +22,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <GL/glfw.h>
 #include "gol_backend.h"
 
 int main(int argc, char **argv)
 {
 	t_lifeBoard *board = createLifeBoard(10);
+	glfwInit();
 
+	// cleanup before we leave.
+	glfwTerminate();
 	destroyLifeBoard(board);
 }
