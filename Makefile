@@ -8,7 +8,6 @@ LFLAGS = -lglfw -lm -lc -framework AGL -framework OpenGL -framework Carbon
 gol: gol.c
 	${CC} ${CFLAGS} gol.c gol_backend.c ${LFLAGS} -o gol
 
-install:
-	mv gol gol.app/Contents/MacOS 
 clean:
 	rm -Rf gol
+	rm -Rf gol.dSYM
