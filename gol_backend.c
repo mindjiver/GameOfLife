@@ -71,6 +71,7 @@ t_lifeBoard *createLifeBoard(int boardSize)
 
 	srandom(42);
 
+	// Create a random initialisated board.
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
 			lifeBoard->matrix[x][y] = random() % 2;
