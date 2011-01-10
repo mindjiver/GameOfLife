@@ -27,15 +27,41 @@
 
 int main(int argc, char **argv)
 {
+	int running = GL_TRUE;
+	int boardSize = 400;
 	// TODO validate command line arguments:
 	//  - size of board
 	//  - simulation speed
 	//  ...
 	//  - Profit!
-	t_lifeBoard *board = createLifeBoard(10);
-	glfwInit();
+	t_lifeBoard *board = createLifeBoard(boardSize);
+
+	if(!glfwInit()) {
+		exit(EXIT_FAILURE);
+	}
+
+	if(!glfwOpenWindow(boardSize, boardSize, 0,0,0,0,0,0, GLFW_WINDOW)) {
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
+
+	glfwSetWindowTitle("Game of Life - the ressurection");
+
+	while (running) {
+		glClear( GL_COLOR_BUFFER_BIT);
+		glfwSwapBuffers();
+
+		running = !glfwGetKey(GLFW_KEY_ESC) &&
+			glfwGetWindowParam(GLFW_OPENED);
+
+		calculateLifeSphere(board);
+//		glfwSleep(1.0);
+		// render sphere in window.
+	}
 
 	// Cleanup before we leave.
 	glfwTerminate();
 	destroyLifeBoard(board);
+
+	return 0;
 }

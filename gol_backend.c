@@ -77,16 +77,7 @@ t_lifeBoard *createLifeBoard(int boardSize)
 			lifeBoard->matrix[x][y] = random() % 2;
 		}
 	}
-	// Create the R-Pentomino
-/*
-	int halfSize = boardSize / 2;
-	  
-	lifeBoard->matrix[halfSize][halfSize] = true;
-	lifeBoard->matrix[halfSize][halfSize + 1] = true;
-	lifeBoard->matrix[halfSize][halfSize - 1] = true;
-	lifeBoard->matrix[halfSize + 1][halfSize - 1] = true;
-	lifeBoard->matrix[halfSize - 1][halfSize] = true;
-*/
+
 	return lifeBoard;
 }
 	
