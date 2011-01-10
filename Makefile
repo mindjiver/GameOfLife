@@ -1,5 +1,5 @@
 # Compiler settings
-CC     = gcc
+CC     = /Developer/usr/llvm-gcc-4.2/bin/llvm-gcc-4.2
 CFLAGS = -std=c99 -g -Wall -I/usr/local/include -L/usr/local/lib
 
 # Linker settings
