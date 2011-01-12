@@ -22,22 +22,34 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <GL/glfw.h>
 #include "gol_backend.h"
+
+#define TITLE   "Game of Life - the ressurection"
+#define VERSION "0.1"
+#define AUTHOR  "Peter Joensson (peter.joensson@gmail.com)"
+
+#define MAXLEN 256
 
 void renderSquare(int x, int y, float s);
 
 int main(int argc, char **argv)
 {
-	//int running = GL_TRUE;
-	int boardSize = 400;
-
 	// TODO validate command line arguments:
 	//  - size of board
 	//  - simulation speed
 	//  ...
-	//  - Profit!
+	//  - Profit!	
+	int running = GL_TRUE;
+	int boardSize = 500;
+	float sleepTime = 0.1f;
+	char windowTitle[MAXLEN];
 	t_lifeBoard *board = createLifeBoard(boardSize);
+
+	if(!board) {
+		exit(EXIT_FAILURE);
+	}
 
 	if(!glfwInit()) {
 		exit(EXIT_FAILURE);
@@ -47,15 +59,19 @@ int main(int argc, char **argv)
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
+	
+	// set default window title
+	snprintf(windowTitle, MAXLEN, TITLE);
+	// Scale up using 2.0 to render in all four quandrants of screen.
+	float s = 2.0f / (float)board->boardSize;
+	// move (0,0) to lower left corner to make rendering easier.
+	glTranslatef(-1.0f,-1.0f,0.0f);
+	
+	int generation = 0;
+	while (running) {
+		
+		glfwSetWindowTitle(windowTitle);
 
-	glfwSetWindowTitle("Game of Life - the ressurection");
-
-	int turns = 10;
-	int i = 0;
-
-	float s = 1.0f / (float)board->boardSize;
-
-	while (i < turns) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		for(int x=0; x<board->boardSize; x++) {
@@ -69,13 +85,14 @@ int main(int argc, char **argv)
 
 		glfwSwapBuffers();
 
-		//running = !glfwGetKey(GLFW_KEY_ESC) &&
-		//	glfwGetWindowParam(GLFW_OPENED);
+		running = !glfwGetKey(GLFW_KEY_ESC) &&
+			glfwGetWindowParam(GLFW_OPENED);
 
 		calculateLifeSphere(board);
-		glfwSleep(1.0);
-		// render sphere in window.
-		i++;
+		glfwSleep(sleepTime);
+
+		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE, generation);
+		generation++;
 	}
 
 	// Cleanup before we leave.
@@ -89,32 +106,22 @@ int main(int argc, char **argv)
 void renderSquare(int x, int y, float s)
 {
 	float z = 0.0f;
+	float f_x = (float)x * (s*1.0f);
+	float f_y = (float)y * (s*1.0f);
 
-	float f_x = (float)x * s;
-	float f_y = (float)y * s;
-
-	// this should be the coordinates if we render a
-	// correctly scaled quad from (0, 0).
-//	printf("rendering (%f, %f),", f_x,   f_y);
-//	printf("(%f, %f),",           f_x+s, f_y);
-//	printf("(%f, %f),",           f_x+s, f_y-s);
-//	printf("(%f, %f)\n",          f_x,   f_y-s);
-	
+#ifdef DEBUG
+	printf("[(%f, %f),",   f_x,   f_y);
+	printf( "(%f, %f),",   f_x+s, f_y);
+	printf( "(%f, %f),",   f_x+s, f_y-s);
+	printf( "(%f, %f)]\n", f_x,   f_y-s);
+#endif
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(f_x,
-		   f_y,
-	 	   z); 
-	glVertex3f(f_x+s,
-		   f_y,
-	 	   z);   
-	glVertex3f(f_x+s,
-		   f_y-s,
-	 	   z); 
-	glVertex3f(f_x,
-		   f_y-s,
-	 	   z); 
+	glVertex3f(f_x,   f_y,   z); 
+	glVertex3f(f_x+s, f_y,   z);   
+	glVertex3f(f_x+s, f_y-s, z); 
+	glVertex3f(f_x,   f_y-s, z); 
 	glEnd();
-	
+
 	return;
 }
