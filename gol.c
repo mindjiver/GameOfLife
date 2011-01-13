@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
 		for(int x=0; x<board->boardSize; x++) {
 			for(int y=0; y<board->boardSize; y++) {
-				if(board->matrix[x][y] == true) {
+				if(getCell(board, x, y) == true) {
 					renderSquare(x, y, s);
 				} 
 				
