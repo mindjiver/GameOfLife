@@ -247,9 +247,9 @@ void calculateLife(t_lifeBoard *lifeBoard)
 
 
 /**
- * Calcuate the next life cycle for all the cells with the board projected onto a spehere
+ * Calcuate the next life cycle for all the cells with the board projected onto a torus.
  */
-void calculateLifeSphere(t_lifeBoard *lifeBoard)
+void calculateLifeTorus(t_lifeBoard *lifeBoard)
 {		
 
 	if (lifeBoard == NULL) {

@@ -24,28 +24,45 @@
 #include <stdlib.h>
 #include <string.h>
 #include <GL/glfw.h>
+#include <assert.h>
+
 #include "gol_backend.h"
 
 #define TITLE   "Game of Life - the ressurection"
 #define VERSION "0.1"
-#define AUTHOR  "Peter Joensson (peter.joensson@gmail.com)"
-
+#define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
+#define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
 
-void renderSquare(int x, int y, float s);
+void renderSquare(int, int, float);
+void printUsage(char *);
 
 int main(int argc, char **argv)
 {
-	// TODO validate command line arguments:
-	//  - size of board
-	//  - simulation speed
-	//  ...
-	//  - Profit!	
 	int running = GL_TRUE;
-	int boardSize = 500;
-	float sleepTime = 0.1f;
+	int boardSize = 0;
+	float sleepTime = 0.0f;
+	float scaleFactor = 0.0f;
 	char windowTitle[MAXLEN];
+
+	if (argc < 4) {
+		printUsage(argv[0]);
+
+		return 0;
+	} else {
+		boardSize = atoi(argv[1]);
+		scaleFactor = atof(argv[2]);
+		sleepTime = atof(argv[3]);
+	}
+
+	// make sure that the input values are somewhat sane.
+	assert(boardSize > 0);
+	assert(scaleFactor > 0.0f);
+	assert(sleepTime > 0);
+
+	int windowSize = boardSize * (int)scaleFactor * 2.0f;
 	t_lifeBoard *board = createLifeBoard(boardSize);
+	float s = scaleFactor / (float)board->boardSize;
 
 	if(!board) {
 		exit(EXIT_FAILURE);
@@ -55,17 +72,16 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	if(!glfwOpenWindow(boardSize, boardSize, 0,0,0,0,0,0, GLFW_WINDOW)) {
+	if(!glfwOpenWindow(windowSize, windowSize, 0,0,0,0,0,0, GLFW_WINDOW)) {
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
 	
 	// set default window title
 	snprintf(windowTitle, MAXLEN, TITLE);
-	// Scale up using 2.0 to render in all four quandrants of screen.
-	float s = 2.0f / (float)board->boardSize;
+
 	// move (0,0) to lower left corner to make rendering easier.
-	glTranslatef(-1.0f,-1.0f,0.0f);
+	glTranslatef(-1.0f, -1.0f, 0.0f);
 	
 	int generation = 0;
 	while (running) {
@@ -88,7 +104,7 @@ int main(int argc, char **argv)
 		running = !glfwGetKey(GLFW_KEY_ESC) &&
 			glfwGetWindowParam(GLFW_OPENED);
 
-		calculateLifeSphere(board);
+		calculateLifeTorus(board);
 		glfwSleep(sleepTime);
 
 		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE, generation);
@@ -102,7 +118,10 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-
+/**
+ *
+ *
+ */
 void renderSquare(int x, int y, float s)
 {
 	float z = 0.0f;
@@ -124,4 +143,15 @@ void renderSquare(int x, int y, float s)
 	glEnd();
 
 	return;
+}
+
+/**
+ *
+ *
+ */
+void printUsage(char *name)
+{
+	printf("%s - %s\n", TITLE, VERSION);
+	printf("%s - %s\n", LICENSE, AUTHOR);
+	printf("%s <board size> <scale factor> <update interval>\n", name);
 }
