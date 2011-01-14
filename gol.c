@@ -62,7 +62,6 @@ int main(int argc, char **argv)
 
 	int windowSize = boardSize * (int)scaleFactor * 2.0f;
 	t_lifeBoard *board = createLifeBoard(boardSize);
-	float s = scaleFactor / (float)board->boardSize;
 
 	if(!board) {
 		exit(EXIT_FAILURE);
@@ -82,7 +81,7 @@ int main(int argc, char **argv)
 
 	// move (0,0) to lower left corner to make rendering easier.
 	glTranslatef(-1.0f, -1.0f, 0.0f);
-	
+	float s = scaleFactor / (float)board->boardSize;	
 	int generation = 0;
 	while (running) {
 		
@@ -107,7 +106,8 @@ int main(int argc, char **argv)
 		calculateLifeTorus(board);
 		glfwSleep(sleepTime);
 
-		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE, generation);
+		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE,
+			 generation);
 		generation++;
 	}
 
