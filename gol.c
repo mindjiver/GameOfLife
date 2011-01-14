@@ -32,7 +32,12 @@
 
 #define MAXLEN 256
 
-void renderSquare(int x, int y, float s);
+static void renderSquare(int, int, float);
+static void processKeyPress(int, int);
+static void processMouseClick(int ,int);
+
+// Globals to be updated by callback functions from key and mouse presses.
+int running = GL_TRUE;
 
 int main(int argc, char **argv)
 {
@@ -41,7 +46,7 @@ int main(int argc, char **argv)
 	//  - simulation speed
 	//  ...
 	//  - Profit!	
-	int running = GL_TRUE;
+
 	int boardSize = 500;
 	float sleepTime = 0.1f;
 	char windowTitle[MAXLEN];
@@ -65,14 +70,19 @@ int main(int argc, char **argv)
 	// Scale up using 2.0 to render in all four quandrants of screen.
 	float s = 2.0f / (float)board->boardSize;
 	// move (0,0) to lower left corner to make rendering easier.
-	glTranslatef(-1.0f,-1.0f,0.0f);
+	(void)glTranslatef(-1.0f,-1.0f,0.0f);
 	
+	//setup callback functions for keyboard and mouse.
+	(void)glfwSetKeyCallback(&processKeyPress);
+	(void)glfwSetMouseButtonCallback(&processMouseClick);
+
 	int generation = 0;
 	while (running) {
 		
+		glfwPollEvents();
 		glfwSetWindowTitle(windowTitle);
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		(void)glClear(GL_COLOR_BUFFER_BIT);
 
 		for(int x=0; x<board->boardSize; x++) {
 			for(int y=0; y<board->boardSize; y++) {
@@ -85,12 +95,9 @@ int main(int argc, char **argv)
 
 		glfwSwapBuffers();
 
-		running = !glfwGetKey(GLFW_KEY_ESC) &&
-			glfwGetWindowParam(GLFW_OPENED);
-
-		calculateLifeSphere(board);
+		// sleep and calculate next generation.
 		glfwSleep(sleepTime);
-
+		calculateLifeSphere(board);
 		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE, generation);
 		generation++;
 	}
@@ -124,4 +131,35 @@ void renderSquare(int x, int y, float s)
 	glEnd();
 
 	return;
+}
+
+/**
+ *
+ */
+void processKeyPress(int key, int action)
+{
+#ifdef _DEBUG_
+	printf("key %d, with action %d\n", key, action);
+	(void)fflush(NULL);
+#endif
+
+	switch(key) {
+	case GLFW_KEY_ESC:
+		running = GL_FALSE;
+		break;
+	default:
+		break;
+	}
+	
+}
+
+/**
+ *
+ */
+void processMouseClick(int button, int action)
+{
+#ifdef _DEBUG_
+	printf("button %d, with action %d\n", button, action);
+	(void)fflush(NULL);
+#endif
 }
