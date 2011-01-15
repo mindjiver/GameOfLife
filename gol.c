@@ -145,21 +145,21 @@ int main(int argc, char **argv)
 void renderSquare(int x, int y, float s)
 {
 	float z = 0.0f;
-	float f_x = (float)x * (s*1.0f);
-	float f_y = (float)y * (s*1.0f);
+	float fX = (float)x * (s*1.0f);
+	float fY = (float)y * (s*1.0f);
 
 #ifdef DEBUG
-	printf("[(%f, %f),",   f_x,   f_y);
-	printf( "(%f, %f),",   f_x+s, f_y);
-	printf( "(%f, %f),",   f_x+s, f_y-s);
-	printf( "(%f, %f)]\n", f_x,   f_y-s);
+	printf("[(%f, %f),",   fX,   fY);
+	printf( "(%f, %f),",   fX+s, fY);
+	printf( "(%f, %f),",   fX+s, fY-s);
+	printf( "(%f, %f)]\n", fX,   fY-s);
 #endif
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(f_x,   f_y,   z); 
-	glVertex3f(f_x+s, f_y,   z);   
-	glVertex3f(f_x+s, f_y-s, z); 
-	glVertex3f(f_x,   f_y-s, z); 
+	glVertex3f(fX,   fY,   z); 
+	glVertex3f(fX+s, fY,   z);   
+	glVertex3f(fX+s, fY-s, z); 
+	glVertex3f(fX,   fY-s, z); 
 	glEnd();
 
 	return;
@@ -222,8 +222,25 @@ void processKeyPress(int key, int action)
  */
 void processMouseClick(int button, int action)
 {
-#ifdef _DEBUG_
-	printf("button %d, with action %d\n", button, action);
+	int *xPos = NULL;
+	int *yPos = NULL;
+
+	(void)glfwGetMousePos(xPos, yPos);
+
+	assert(xPos != NULL);
+	assert(yPos != NULL);
+
+//#ifdef _DEBUG_
+	printf("Button %d, with action %d on ", button, action);
+	printf("(%d, %d)\n", *xPos, *yPos);
 	(void)fflush(NULL);
-#endif
+//#endif
+	switch (button) {
+	case GLFW_MOUSE_BUTTON_LEFT:
+		break;
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		break;
+	default:
+		break;
+	}
 }
