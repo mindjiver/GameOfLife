@@ -37,7 +37,7 @@
 static void printUsage(char *);
 static void renderSquare(int, int, float);
 static void processKeyPress(int, int);
-static void processMouseClick(int ,int);
+static void processMouseClick(int, int);
 
 // Globals to be updated by callback functions from key and mouse presses.
 int running = GL_TRUE;
@@ -188,7 +188,7 @@ void processKeyPress(int key, int action)
 #endif
 
 	// only process on key down
-	if (action == 0) {
+	if (action == GLFW_RELEASE) {
 		return;
 	}
 
@@ -222,25 +222,20 @@ void processKeyPress(int key, int action)
  */
 void processMouseClick(int button, int action)
 {
-	int *xPos = NULL;
-	int *yPos = NULL;
+	int xPos = 0;
+	int yPos = 0;
 
-	(void)glfwGetMousePos(xPos, yPos);
+	// only process on mouse click down.
+	if (action == GLFW_RELEASE) {
+		return;
+	} 
 
-	assert(xPos != NULL);
-	assert(yPos != NULL);
+	(void)glfwGetMousePos(&xPos, &yPos);
 
 //#ifdef _DEBUG_
 	printf("Button %d, with action %d on ", button, action);
-	printf("(%d, %d)\n", *xPos, *yPos);
+	printf("(%d, %d)\n", xPos, yPos);
 	(void)fflush(NULL);
 //#endif
-	switch (button) {
-	case GLFW_MOUSE_BUTTON_LEFT:
-		break;
-	case GLFW_MOUSE_BUTTON_RIGHT:
-		break;
-	default:
-		break;
-	}
+
 }
