@@ -38,6 +38,7 @@ static void processMouseClick(int ,int);
 
 // Globals to be updated by callback functions from key and mouse presses.
 int running = GL_TRUE;
+int rendering = GL_TRUE;
 
 int main(int argc, char **argv)
 {
@@ -77,29 +78,34 @@ int main(int argc, char **argv)
 	(void)glfwSetMouseButtonCallback(&processMouseClick);
 
 	int generation = 0;
+
 	while (running) {
 		
 		glfwPollEvents();
-		glfwSetWindowTitle(windowTitle);
 
-		(void)glClear(GL_COLOR_BUFFER_BIT);
+		if (rendering) {
 
-		for(int x=0; x<board->boardSize; x++) {
-			for(int y=0; y<board->boardSize; y++) {
-				if(board->matrix[x][y] == true) {
-					renderSquare(x, y, s);
-				} 
-				
-			}			
+			(void)glClear(GL_COLOR_BUFFER_BIT);
+
+			for(int x=0; x<board->boardSize; x++) {
+				for(int y=0; y<board->boardSize; y++) {
+					if(board->matrix[x][y] == true) {
+						renderSquare(x, y, s);
+					} 
+				}			
+			}
+
+			glfwSwapBuffers();
+
+			// sleep and calculate next generation.
+			glfwSleep(sleepTime);
+			calculateLifeSphere(board);
+			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
+				 TITLE, generation);
+			glfwSetWindowTitle(windowTitle);
+			generation++;
+
 		}
-
-		glfwSwapBuffers();
-
-		// sleep and calculate next generation.
-		glfwSleep(sleepTime);
-		calculateLifeSphere(board);
-		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE, generation);
-		generation++;
 	}
 
 	// Cleanup before we leave.
@@ -143,9 +149,29 @@ void processKeyPress(int key, int action)
 	(void)fflush(NULL);
 #endif
 
+	// only process on key down
+	if (action == 0) {
+		return;
+	}
+
 	switch(key) {
 	case GLFW_KEY_ESC:
+	case 'Q':
+	case 'q':
 		running = GL_FALSE;
+		break;
+	case 'S':
+	case 's':
+		// start/stop the simulation.
+		rendering = rendering == GL_TRUE ? GL_FALSE : GL_TRUE;
+		break;
+	case 'N':
+	case 'n':
+		// step one generation forwards.
+		break;
+	case 'P':
+	case 'p':
+		// step one generation backwards.
 		break;
 	default:
 		break;
