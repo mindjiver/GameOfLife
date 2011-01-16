@@ -27,8 +27,9 @@ typedef enum boolean { true = 1, false = 0 } boolean;
 
 typedef struct t_lifeBoard
 {
+	unsigned int boardSize;
 	boolean **matrix;
-	int boardSize;
+
 } t_lifeBoard;
 
 t_lifeBoard *createLifeBoard(int);

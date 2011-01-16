@@ -22,22 +22,40 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
-#include <GL/glfw.h>
 #include <assert.h>
-
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <GL/glfw.h>
+	
 #include "gol_backend.h"
-
+	
+#define MAX_PAYLOAD_LENGTH (1024 * 1024)
+	
 #define TITLE   "Game of Life - the ressurection"
-#define VERSION "0.1"
+#define VERSION "0.2"
 #define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
+#define ARGUMENTS 4
+	
+typedef struct message
+{
+	unsigned int length;
+	char payLoad[MAX_PAYLOAD_LENGTH];
+} message;
 
 static void printUsage(char *);
 static void renderSquare(int, int, float);
 static void processKeyPress(int, int);
 static void processMouseClick(int, int);
+static void childProcess(int *, int *);
+
+// rewrite me!
+static int sendLifeBoard(int, t_lifeBoard *);
+static int receiveLifeBoard(int, t_lifeBoard *);
 
 // Globals to be updated by callback functions from key and mouse presses.
 int running = GL_TRUE;
@@ -45,20 +63,19 @@ int rendering = GL_TRUE;
 
 int main(int argc, char **argv)
 {
-	// TODO validate command line arguments:
-	//  - size of board
-	//  - simulation speed
-	//  ...
-	//  - Profit!	
+	int serverToClient[2];
+	int clientToServer[2];
+	int pid = 0;
+	int rc = 0;
 
-	int boardSize = 500;
-	int scaleFactor = 0;
-	float sleepTime = 0.1f;
+	int boardSize = 0;
+	float scaleFactor = 0.0f;
+	float sleepTime = 0.0f;
 	char windowTitle[MAXLEN];
-
-	if (argc < 4) {
+	
+	if (argc < ARGUMENTS) {
 		printUsage(argv[0]);
-
+	
 		return 0;
 	} else {
 		boardSize = atoi(argv[1]);
@@ -71,30 +88,60 @@ int main(int argc, char **argv)
 	assert(scaleFactor > 0.0f);
 	assert(sleepTime > 0);
 
-	int windowSize = boardSize * (int)scaleFactor * 2.0f;
+	rc = pipe(serverToClient);
+	if(rc == -1) {
+		perror("IPC server<->client");
+		return -1;
+	}
+
+	rc = pipe(clientToServer);
+	if(rc == -1) {
+		perror("IPC client<->server");
+		return -1;
+	}
+
+	pid = fork();
+
+	switch(pid) {
+	case -1:
+		perror("Fork failed.");
+		exit(-1);
+	case 0:
+		childProcess(clientToServer, serverToClient);
+		// not reached.
+	case 1:
+		// in parent, so continue.
+		break;
+			
+	}
+
+	// Close unneccessary client handles.
+	close(serverToClient[0]);
+	close(clientToServer[1]);
+
+//	int windowSize = boardSize * (int)scaleFactor * 2.0f;
 	t_lifeBoard *board = createLifeBoard(boardSize);
 
 	if(!board) {
 		exit(EXIT_FAILURE);
 	}
 
-	if(!glfwInit()) {
-		exit(EXIT_FAILURE);
-	}
+//	if(!glfwInit()) {
+//		exit(EXIT_FAILURE);
+//	}
 
-	if(!glfwOpenWindow(windowSize, windowSize, 0,0,0,0,0,0, GLFW_WINDOW)) {
-		glfwTerminate();
-		exit(EXIT_FAILURE);
-	}
+	/* if(!glfwOpenWindow(windowSize, windowSize, 0,0,0,0,0,0, GLFW_WINDOW)) { */
+	/* 	glfwTerminate(); */
+	/* 	exit(EXIT_FAILURE); */
+	/* } */
 	
 	// set default window title
 	snprintf(windowTitle, MAXLEN, TITLE);
 
 	// move (0,0) to lower left corner to make rendering easier.
-	glTranslatef(-1.0f, -1.0f, 0.0f);
-	float s = scaleFactor / (float)board->boardSize;	
+	//float s = scaleFactor / (float)board->boardSize;	
 
-	(void)glTranslatef(-1.0f,-1.0f,0.0f);
+//	(void)glTranslatef(-1.0f,-1.0f,0.0f);
 	
 	//setup callback functions for keyboard and mouse.
 	(void)glfwSetKeyCallback(&processKeyPress);
@@ -104,28 +151,30 @@ int main(int argc, char **argv)
 
 	while (running) {
 		
-		glfwPollEvents();
+		//glfwPollEvents();
 
 		if (rendering) {
 
-			(void)glClear(GL_COLOR_BUFFER_BIT);
+			//(void)glClear(GL_COLOR_BUFFER_BIT);
 
-			for(int x=0; x<board->boardSize; x++) {
-				for(int y=0; y<board->boardSize; y++) {
+			for(unsigned int x=0; x<board->boardSize; x++) {
+				for(unsigned int y=0; y<board->boardSize; y++) {
 					if(board->matrix[x][y] == true) {
-						renderSquare(x, y, s);
+						//renderSquare(x, y, s);
 					}
 				}
 			}
 
-			glfwSwapBuffers();
+			//glfwSwapBuffers();
 
-			// sleep and calculate next generation.
-			glfwSleep(sleepTime);
-			calculateLifeTorus(board);
+			(void)sendLifeBoard(clientToServer[0], board);
+			(void)receiveLifeBoard(serverToClient[1], board);
+
+			glfwSleep(sleepTime);			
+
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
 				 TITLE, generation);
-			glfwSetWindowTitle(windowTitle);
+			//glfwSetWindowTitle(windowTitle);
 			generation++;
 
 		}
@@ -238,4 +287,65 @@ void processMouseClick(int button, int action)
 	(void)fflush(NULL);
 //#endif
 
+}
+
+/**
+ *
+ */
+static void childProcess(int *clientToServer, int* serverToClient)
+{
+	int rc = 0;
+	t_lifeBoard *board = NULL;
+	// Close unneccessary client handles.
+	close(clientToServer[0]);
+	close(serverToClient[1]);
+	
+	rc = receiveLifeBoard(clientToServer[1], board);
+	calculateLifeTorus(board);
+	sendLifeBoard(serverToClient[0], board);
+}
+
+/**
+ *
+ */
+static int sendLifeBoard(int pipe, t_lifeBoard *board)
+{
+	printf("Trying to send board to pipe %d ...\n", pipe);
+	(void)fflush(NULL);
+
+	message *m = (message *)malloc(sizeof(message));
+	m->length = sizeof(unsigned int) + (sizeof(enum) *
+					    (board->boardSize * board->boardSize));
+
+	assert(m->length < MAX_PAYLOAD_LENGTH);
+        memcpy(m->payLoad, board, m->length);
+	(void)write(pipe, m, sizeof(m));
+	free(m);
+	
+	return 0;
+}
+
+/**
+ *
+ */
+static int receiveLifeBoard(int pipe, t_lifeBoard *board)
+{
+	unsigned int i = 0;
+	unsigned int length = 0;
+	int ret = 0;
+	char c;
+	char temp[1000];
+
+	printf("Trying to receive board from pipe %d ...\n", pipe);
+	(void)fflush(NULL);
+
+	// this should hopefully(?) retrieve the size of what we want to read.
+	ret = read(pipe, &i, sizeof(unsigned int));
+
+	do {
+		ret = read(pipe, &c, 1);
+		temp[i++] = c;
+	} while ((ret > 0) && (i < length));
+		    
+	return -1;
 }

@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "gol_backend.h"
 
 /**
@@ -106,9 +107,12 @@ boolean getCell(t_lifeBoard *lifeBoard, int x, int y)
 		return false;
 	}
 
+	assert(x >= 0);
+	assert(y >= 1);
+
 	/* check that we stay inside the game matrix */
-	boolean xOk = (x - 1 >= 0) && (x + 1 < lifeBoard->boardSize) ? true : false;
-	boolean yOk = (y - 1 >= 0) && (y + 1 < lifeBoard->boardSize) ? true : false;
+	boolean xOk = (x - 1 >= 0) && (x + 1 < (int)lifeBoard->boardSize) ? true : false;
+	boolean yOk = (y - 1 >= 0) && (y + 1 < (int)lifeBoard->boardSize) ? true : false;
 
 	if (xOk && yOk) {
 		return lifeBoard->matrix[x][y];
