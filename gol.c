@@ -29,7 +29,7 @@
 #include "gol_backend.h"
 
 #define TITLE   "Game of Life - the ressurection"
-#define VERSION "0.1"
+#define VERSION "0.2"
 #define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
@@ -38,6 +38,7 @@ static void printUsage(char *);
 static void renderSquare(int, int, float);
 static void processKeyPress(int, int);
 static void processMouseClick(int, int);
+static void renderBoard(t_lifeBoard *, float);
 
 // Globals to be updated by callback functions from key and mouse presses.
 int running = GL_TRUE;
@@ -45,15 +46,9 @@ int rendering = GL_TRUE;
 
 int main(int argc, char **argv)
 {
-	// TODO validate command line arguments:
-	//  - size of board
-	//  - simulation speed
-	//  ...
-	//  - Profit!	
-
-	int boardSize = 500;
-	int scaleFactor = 0;
-	float sleepTime = 0.1f;
+	int boardSize = 0.0;
+	float scaleFactor = 0.0f;
+	float sleepTime = 0.0f;
 
 	char windowTitle[MAXLEN];
 
@@ -68,11 +63,19 @@ int main(int argc, char **argv)
 	}
 
 	// make sure that the input values are somewhat sane.
+	if (scaleFactor < 2.0f) {
+		scaleFactor = 2.0f;
+		printf("Scale factor too low, resetting to 2.0\n");
+		(void)fflush(NULL);
+	}
+
 	assert(boardSize > 0);
 	assert(scaleFactor > 0.0f);
 	assert(sleepTime > 0);
 
-	int windowSize = boardSize * (int)scaleFactor * 2.0f;
+	// we scale with 2 since we will move (0, 0) to the bottom
+	// left corner later.
+	int windowSize = boardSize * (int)scaleFactor * 2;
 	t_lifeBoard *board = createLifeBoard(boardSize);
 
 	if(!board) {
@@ -104,21 +107,14 @@ int main(int argc, char **argv)
 	while (running) {
 		
 		glfwPollEvents();
-
+		if (!glfwGetWindowParam(GLFW_OPENED)) {
+			return 0;
+		}
+		
 		if (rendering) {
 
 			(void)glClear(GL_COLOR_BUFFER_BIT);
-
-			for(int x=0; x<board->boardSize; x++) {
-				for(int y=0; y<board->boardSize; y++) {
-					if(board->matrix[x][y] == true) {
-						renderSquare(x, y, s);
-					}
-				}
-			}
-
-			running = !glfwGetKey(GLFW_KEY_ESC) &&
-				glfwGetWindowParam(GLFW_OPENED);
+			renderBoard(board, s);
 			glfwSwapBuffers();
 			
 			// sleep and calculate next generation.
@@ -183,15 +179,15 @@ void printUsage(char *name)
  */
 void processKeyPress(int key, int action)
 {
-#ifdef _DEBUG_
-	printf("key %d, with action %d\n", key, action);
-	(void)fflush(NULL);
-#endif
-
 	// only process on key down
 	if (action == GLFW_RELEASE) {
 		return;
 	}
+
+#ifdef _DEBUG_
+	printf("key %d, with action %d\n", key, action);
+	(void)fflush(NULL);
+#endif
 
 	switch(key) {
 	case GLFW_KEY_ESC:
@@ -239,4 +235,20 @@ void processMouseClick(int button, int action)
 	(void)fflush(NULL);
 //#endif
 
+//	getCell(xPos, yPos)
+
+}
+
+/**
+ *
+ */
+static void renderBoard(t_lifeBoard *board, float s)
+{
+	for(int x=0; x<board->boardSize; x++) {
+		for(int y=0; y<board->boardSize; y++) {
+			if(getCell(board, x, y) == true) {
+				renderSquare(x, y, s);
+			}
+		}
+	}
 }
