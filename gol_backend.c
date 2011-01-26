@@ -59,13 +59,13 @@ void destroyMatrix(boolean **matrix, int size)
  *
  *
  */
-t_lifeBoard *createLifeBoard(int boardSize)
+LifeBoard *createLifeBoard(int boardSize)
 {
 	if (boardSize <= 0) {
 		return NULL;
 	}
 
-	t_lifeBoard *lifeBoard = (t_lifeBoard *)malloc( sizeof(t_lifeBoard) );
+	LifeBoard *lifeBoard = (LifeBoard *)malloc( sizeof(LifeBoard) );
 	lifeBoard->matrix = createMatrix(boardSize);
 	lifeBoard->boardSize = boardSize;
 
@@ -85,7 +85,7 @@ t_lifeBoard *createLifeBoard(int boardSize)
  *
  *
  */
-void destroyLifeBoard(t_lifeBoard *lifeBoard)
+void destroyLifeBoard(LifeBoard *lifeBoard)
 {
 	if(lifeBoard == NULL) {
 		return;
@@ -100,7 +100,7 @@ void destroyLifeBoard(t_lifeBoard *lifeBoard)
  * 
  * @Return value of cell (x, y) in game matrix
  */
-boolean getCell(t_lifeBoard *lifeBoard, int x, int y)
+boolean getCell(LifeBoard *lifeBoard, int x, int y)
 {
 	if (lifeBoard == NULL) {
 		return false;
@@ -112,6 +112,31 @@ boolean getCell(t_lifeBoard *lifeBoard, int x, int y)
 
 	if (xOk && yOk) {
 		return lifeBoard->matrix[x][y];
+	}
+
+	else {
+		return false;
+	}
+}
+
+/**
+ * Set the value at (x, y) in the game matrix
+ * 
+ * @Return value of cell (x, y) in game matrix
+ */
+boolean setCell(LifeBoard *lifeBoard, int x, int y, boolean state)
+{
+	if (lifeBoard == NULL) {
+		return false;
+	}
+
+	/* check that we stay inside the game matrix */
+	boolean xOk = (x - 1 >= 0) && (x + 1 < lifeBoard->boardSize) ? true : false;
+	boolean yOk = (y - 1 >= 0) && (y + 1 < lifeBoard->boardSize) ? true : false;
+
+	if (xOk && yOk) {
+		lifeBoard->matrix[x][y] = state;
+		return true;
 	}
 
 	else {
@@ -144,7 +169,7 @@ boolean getCell(t_lifeBoard *lifeBoard, int x, int y)
 /**
  * Calcuate the next life cycle for all the cells
  */
-void calculateLife(t_lifeBoard *lifeBoard)
+void calculateLife(LifeBoard *lifeBoard)
 {		
 	if (lifeBoard == NULL) {
 		return;
@@ -249,14 +274,14 @@ void calculateLife(t_lifeBoard *lifeBoard)
 /**
  * Calcuate the next life cycle for all the cells with the board projected onto a torus.
  */
-void calculateLifeTorus(t_lifeBoard *lifeBoard)
+void calculateLifeTorus(LifeBoard *LifeBoard)
 {		
 
-	if (lifeBoard == NULL) {
+	if (LifeBoard == NULL) {
 		return;
 	}
 
-	int boardSize = lifeBoard->boardSize;
+	int boardSize = LifeBoard->boardSize;
 	boolean **newBoard = (boolean **)malloc(sizeof(boolean *) * boardSize);
 	
 	for (int i = 0; i < boardSize; i++) {
@@ -276,35 +301,35 @@ void calculateLifeTorus(t_lifeBoard *lifeBoard)
 			int yPlusOne =  (y + 1) > maxBoardSize ? 0 : (y + 1);
 			int yMinusOne = (y - 1) < 0 ? maxBoardSize : (y - 1);
 			
-			if (lifeBoard->matrix[xMinusOne][yPlusOne]) {
+			if (LifeBoard->matrix[xMinusOne][yPlusOne]) {
 				count++;
 			}
 			
-			if (lifeBoard->matrix[x][yPlusOne]) {
+			if (LifeBoard->matrix[x][yPlusOne]) {
 				count++;
 			}
 
-			if (lifeBoard->matrix[xPlusOne][yPlusOne]) {
+			if (LifeBoard->matrix[xPlusOne][yPlusOne]) {
 				count++;
 			}
 
-			if (lifeBoard->matrix[xMinusOne][y]) {
+			if (LifeBoard->matrix[xMinusOne][y]) {
 				count++;
 			}
 			
-			if (lifeBoard->matrix[xPlusOne][y]) {
+			if (LifeBoard->matrix[xPlusOne][y]) {
 				count++;
 			}
 			
-			if (lifeBoard->matrix[xMinusOne][yMinusOne]) {
+			if (LifeBoard->matrix[xMinusOne][yMinusOne]) {
 				count++;
 			}
 			
-			if (lifeBoard->matrix[x][yMinusOne]) {
+			if (LifeBoard->matrix[x][yMinusOne]) {
 				count++;
 			}
 
-			if (lifeBoard->matrix[xPlusOne][yMinusOne]) {
+			if (LifeBoard->matrix[xPlusOne][yMinusOne]) {
 				count++;
 			}
 
@@ -318,7 +343,7 @@ void calculateLifeTorus(t_lifeBoard *lifeBoard)
 			  next generation.
 			*/					
 			
-			if (lifeBoard->matrix[x][y]) {
+			if (LifeBoard->matrix[x][y]) {
 				
 				if (count < 2) {
 					newBoard[x][y] = false;
@@ -329,7 +354,7 @@ void calculateLifeTorus(t_lifeBoard *lifeBoard)
 				}
 				
 				else {
-						newBoard[x][y] = lifeBoard->matrix[x][y];
+						newBoard[x][y] = LifeBoard->matrix[x][y];
 				}
 				
 			}
@@ -348,7 +373,7 @@ void calculateLifeTorus(t_lifeBoard *lifeBoard)
 		}
 	}
 
-	destroyMatrix(lifeBoard->matrix, lifeBoard->boardSize);
-	lifeBoard->matrix = newBoard;
+	destroyMatrix(LifeBoard->matrix, LifeBoard->boardSize);
+	LifeBoard->matrix = newBoard;
 }
 	

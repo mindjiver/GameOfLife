@@ -34,15 +34,19 @@
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
 
+// Uncomment and recompile to get debug traces.
+//#define _DEBUG_ 
+
 static void printUsage(char *);
 static void renderSquare(int, int, float);
 static void processKeyPress(int, int);
 static void processMouseClick(int, int);
-static void renderBoard(t_lifeBoard *, float);
+static void renderBoard(LifeBoard *, float);
 
 // Globals to be updated by callback functions from key and mouse presses.
 int running = GL_TRUE;
-int rendering = GL_TRUE;
+int simulation = GL_TRUE;
+LifeBoard *board = NULL;
 
 int main(int argc, char **argv)
 {
@@ -76,7 +80,7 @@ int main(int argc, char **argv)
 	// we scale with 2 since we will move (0, 0) to the bottom
 	// left corner later.
 	int windowSize = boardSize * (int)scaleFactor * 2;
-	t_lifeBoard *board = createLifeBoard(boardSize);
+	board = createLifeBoard(boardSize);
 
 	if(!board) {
 		exit(EXIT_FAILURE);
@@ -111,21 +115,20 @@ int main(int argc, char **argv)
 			return 0;
 		}
 		
-		if (rendering) {
-
-			(void)glClear(GL_COLOR_BUFFER_BIT);
-			renderBoard(board, s);
-			glfwSwapBuffers();
+		(void)glClear(GL_COLOR_BUFFER_BIT);
+		renderBoard(board, s);
+		glfwSwapBuffers();
 			
-			// sleep and calculate next generation.
+		// sleep and calculate next generation.
+		if (simulation) {
 			glfwSleep(sleepTime);
 			calculateLifeTorus(board);
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
 				 TITLE, generation);
 			glfwSetWindowTitle(windowTitle);
 			generation++;
-		
 		}
+		
 	}
 
 	// Cleanup before we leave.
@@ -145,11 +148,12 @@ void renderSquare(int x, int y, float s)
 	float fX = (float)x * (s*1.0f);
 	float fY = (float)y * (s*1.0f);
 
-#ifdef DEBUG
+#ifdef _DEBUG_
 	printf("[(%f, %f),",   fX,   fY);
 	printf( "(%f, %f),",   fX+s, fY);
 	printf( "(%f, %f),",   fX+s, fY-s);
 	printf( "(%f, %f)]\n", fX,   fY-s);
+	fflush(NULL);
 #endif
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 0.0f, 0.0f);
@@ -198,7 +202,7 @@ void processKeyPress(int key, int action)
 	case 'S':
 	case 's':
 		// start/stop the simulation.
-		rendering = rendering == GL_TRUE ? GL_FALSE : GL_TRUE;
+		simulation = simulation == GL_TRUE ? GL_FALSE : GL_TRUE;
 		break;
 	case 'N':
 	case 'n':
@@ -219,35 +223,42 @@ void processKeyPress(int key, int action)
  */
 void processMouseClick(int button, int action)
 {
-	int xPos = 0;
-	int yPos = 0;
+	int x = 0;
+	int y = 0;
 
 	// only process on mouse click down.
 	if (action == GLFW_RELEASE) {
 		return;
 	} 
 
-	(void)glfwGetMousePos(&xPos, &yPos);
+	(void)glfwGetMousePos(&x, &y);
 
 //#ifdef _DEBUG_
 	printf("Button %d, with action %d on ", button, action);
-	printf("(%d, %d)\n", xPos, yPos);
+	printf("(%d, %d)\n", x, y);
 	(void)fflush(NULL);
 //#endif
 
-//	getCell(xPos, yPos)
-
+	boolean currentState = getCell(board, x, y);
+	boolean newState = currentState ? false : true;
+	printf("currentState: %d, setting newState: %d\n", currentState, newState);
+	fflush(NULL);
+	(void)setCell(board, x, y, newState);
 }
 
 /**
  *
  */
-static void renderBoard(t_lifeBoard *board, float s)
+static void renderBoard(LifeBoard *board, float scale)
 {
+	// quick sanity check.
+	assert(board != NULL);
+	assert(scale > 0.0f);
+
 	for(int x=0; x<board->boardSize; x++) {
 		for(int y=0; y<board->boardSize; y++) {
 			if(getCell(board, x, y) == true) {
-				renderSquare(x, y, s);
+				renderSquare(x, y, scale);
 			}
 		}
 	}

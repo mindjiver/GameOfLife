@@ -25,20 +25,19 @@
 
 typedef enum boolean { true = 1, false = 0 } boolean;
 
-typedef struct t_lifeBoard
+typedef struct LifeBoard
 {
 	boolean **matrix;
 	int boardSize;
-} t_lifeBoard;
+} LifeBoard;
 
-t_lifeBoard *createLifeBoard(int);
+LifeBoard *createLifeBoard(int);
+void destroyLifeBoard(LifeBoard *);
 
-void destroyLifeBoard(t_lifeBoard *);
+boolean getCell(LifeBoard *, int, int);
+boolean setCell(LifeBoard *, int, int, boolean);
 
-boolean getCell(t_lifeBoard *, int, int);
-
-void calculateLife(t_lifeBoard *);
-
-void calculateLifeTorus(t_lifeBoard *);
+void calculateLife(LifeBoard *);
+void calculateLifeTorus(LifeBoard *);
 
 #endif
