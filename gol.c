@@ -223,17 +223,14 @@ void processKeyPress(int key, int action)
  */
 void processMouseClick(int button, int action)
 {
-	int *xPos = NULL;
-	int *yPos = NULL;
+	int xPos = 0;
+	int yPos = 0;
 
-	(void)glfwGetMousePos(xPos, yPos);
-
-	assert(xPos != NULL);
-	assert(yPos != NULL);
+	(void)glfwGetMousePos(&xPos, &yPos);
 
 //#ifdef _DEBUG_
 	printf("Button %d, with action %d on ", button, action);
-	printf("(%d, %d)\n", *xPos, *yPos);
+	printf("(%d, %d)\n", xPos, yPos);
 	(void)fflush(NULL);
 //#endif
 	switch (button) {
