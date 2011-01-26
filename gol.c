@@ -34,33 +34,26 @@
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
 
+static void printUsage(char *);
 static void renderSquare(int, int, float);
 static void processKeyPress(int, int);
 static void processMouseClick(int ,int);
 
 // Globals to be updated by callback functions from key and mouse presses.
 int running = GL_TRUE;
-
-/* int main(int argc, char **argv) */
-/* { */
-/* 	// TODO validate command line arguments: */
-/* 	//  - size of board */
-/* 	//  - simulation speed */
-/* 	//  ... */
-/* 	//  - Profit!	 */
-
-/* 	int boardSize = 500; */
-/* 	float sleepTime = 0.1f; */
-
-void renderSquare(int, int, float);
-void printUsage(char *);
+int rendering = GL_TRUE;
 
 int main(int argc, char **argv)
 {
-	int running = GL_TRUE;
-	int boardSize = 0;
-	float sleepTime = 0.0f;
-	float scaleFactor = 0.0f;
+	// TODO validate command line arguments:
+	//  - size of board
+	//  - simulation speed
+	//  ...
+	//  - Profit!	
+
+	int boardSize = 500;
+	int scaleFactor = 0;
+	float sleepTime = 0.1f;
 
 	char windowTitle[MAXLEN];
 
@@ -99,7 +92,6 @@ int main(int argc, char **argv)
 	snprintf(windowTitle, MAXLEN, TITLE);
 
 	// move (0,0) to lower left corner to make rendering easier.
-	glTranslatef(-1.0f, -1.0f, 0.0f);
 	float s = scaleFactor / (float)board->boardSize;	
 	(void)glTranslatef(-1.0f,-1.0f,0.0f);
 	
@@ -108,33 +100,36 @@ int main(int argc, char **argv)
 	(void)glfwSetMouseButtonCallback(&processMouseClick);
 
 	int generation = 0;
+
 	while (running) {
 		
 		glfwPollEvents();
-		glfwSetWindowTitle(windowTitle);
 
-		(void)glClear(GL_COLOR_BUFFER_BIT);
+		if (rendering) {
 
-		for(int x=0; x<board->boardSize; x++) {
-			for(int y=0; y<board->boardSize; y++) {
-				if(getCell(board, x, y) == true) {
-					renderSquare(x, y, s);
-				} 
-				
-			}			
+			(void)glClear(GL_COLOR_BUFFER_BIT);
+
+			for(int x=0; x<board->boardSize; x++) {
+				for(int y=0; y<board->boardSize; y++) {
+					if(board->matrix[x][y] == true) {
+						renderSquare(x, y, s);
+					}
+				}
+			}
+
+			running = !glfwGetKey(GLFW_KEY_ESC) &&
+				glfwGetWindowParam(GLFW_OPENED);
+			glfwSwapBuffers();
+			
+			// sleep and calculate next generation.
+			glfwSleep(sleepTime);
+			calculateLifeTorus(board);
+			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
+				 TITLE, generation);
+			glfwSetWindowTitle(windowTitle);
+			generation++;
+		
 		}
-
-		glfwSwapBuffers();
-
-		running = !glfwGetKey(GLFW_KEY_ESC) &&
-			glfwGetWindowParam(GLFW_OPENED);
-
-		calculateLifeTorus(board);
-		glfwSleep(sleepTime);
-
-		snprintf(windowTitle, MAXLEN, "%s (%d generation)", TITLE,
-			 generation);
-
 	}
 
 	// Cleanup before we leave.
@@ -182,6 +177,10 @@ void printUsage(char *name)
 	printf("%s <board size> <scale factor> <update interval>\n", name);
 }
 
+/**
+ *
+ *
+ */
 void processKeyPress(int key, int action)
 {
 #ifdef _DEBUG_
@@ -189,9 +188,29 @@ void processKeyPress(int key, int action)
 	(void)fflush(NULL);
 #endif
 
+	// only process on key down
+	if (action == 0) {
+		return;
+	}
+
 	switch(key) {
 	case GLFW_KEY_ESC:
+	case 'Q':
+	case 'q':
 		running = GL_FALSE;
+		break;
+	case 'S':
+	case 's':
+		// start/stop the simulation.
+		rendering = rendering == GL_TRUE ? GL_FALSE : GL_TRUE;
+		break;
+	case 'N':
+	case 'n':
+		// step one generation forwards.
+		break;
+	case 'P':
+	case 'p':
+		// step one generation backwards.
 		break;
 	default:
 		break;
