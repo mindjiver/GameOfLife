@@ -157,10 +157,10 @@ void renderSquare(int x, int y, float s)
 #endif
 	glBegin(GL_QUADS);
 	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(fX,   fY,   z);
-	glVertex3f(fX+s, fY,   z);
-	glVertex3f(fX+s, fY-s, z);
-	glVertex3f(fX,   fY-s, z);
+	glVertex3f(fX,   fY,   z); 
+	glVertex3f(fX+s, fY,   z);   
+	glVertex3f(fX+s, fY-s, z); 
+	glVertex3f(fX,   fY-s, z); 
 	glEnd();
 
 	return;
