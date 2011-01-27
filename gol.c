@@ -27,6 +27,8 @@
 #include <assert.h>
 
 #include "gol_backend.h"
+#include "gol_frontend.h"
+#include "gol.h"
 
 #define TITLE   "Game of Life - the ressurection"
 #define VERSION "0.2"
@@ -35,25 +37,21 @@
 #define MAXLEN 256
 
 // Uncomment and recompile to get debug traces.
-//#define _DEBUG_ 
+#define _DEBUG_ 
+
+//extern int running;
+extern int step;
+extern int simulation;
+extern float sleepTime;
+extern float sleepFactor;
+extern LifeBoard *board;
 
 static void printUsage(char *);
-static void renderSquare(int, int, float);
-static void processKeyPress(int, int);
-static void processMouseClick(int, int);
-static void renderBoard(LifeBoard *, float);
-
-// Globals to be updated by callback functions from key and mouse presses.
-int running = GL_TRUE;
-int simulation = GL_TRUE;
-LifeBoard *board = NULL;
 
 int main(int argc, char **argv)
 {
 	int boardSize = 0.0;
 	float scaleFactor = 0.0f;
-	float sleepTime = 0.0f;
-
 	char windowTitle[MAXLEN];
 
 	if (argc < 4) {
@@ -108,7 +106,7 @@ int main(int argc, char **argv)
 
 	int generation = 0;
 
-	while (running) {
+	while (1) {
 		
 		glfwPollEvents();
 		if (!glfwGetWindowParam(GLFW_OPENED)) {
@@ -121,12 +119,19 @@ int main(int argc, char **argv)
 			
 		// sleep and calculate next generation.
 		if (simulation) {
+#ifdef _DEBUG_
+			printf("Sleeping %f seconds.\n", sleepTime);
+			(void)fflush(NULL);
+#endif
 			glfwSleep(sleepTime);
 			calculateLifeTorus(board);
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
 				 TITLE, generation);
 			glfwSetWindowTitle(windowTitle);
 			generation++;
+			if(step) {
+				simulation = GL_FALSE;
+			}
 		}
 		
 	}
@@ -138,128 +143,15 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-/**
- *
- *
- */
-void renderSquare(int x, int y, float s)
-{
-	float z = 0.0f;
-	float fX = (float)x * (s*1.0f);
-	float fY = (float)y * (s*1.0f);
-
-#ifdef _DEBUG_
-	printf("[(%f, %f),",   fX,   fY);
-	printf( "(%f, %f),",   fX+s, fY);
-	printf( "(%f, %f),",   fX+s, fY-s);
-	printf( "(%f, %f)]\n", fX,   fY-s);
-	fflush(NULL);
-#endif
-	glBegin(GL_QUADS);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(fX,   fY,   z); 
-	glVertex3f(fX+s, fY,   z);   
-	glVertex3f(fX+s, fY-s, z); 
-	glVertex3f(fX,   fY-s, z); 
-	glEnd();
-
-	return;
-}
 
 /**
  *
  *
  */
-void printUsage(char *name)
+static void printUsage(char *name)
 {
 	printf("%s - %s\n", TITLE, VERSION);
 	printf("%s - %s\n", LICENSE, AUTHOR);
 	printf("%s <board size> <scale factor> <update interval>\n", name);
 }
 
-/**
- *
- *
- */
-void processKeyPress(int key, int action)
-{
-	// only process on key down
-	if (action == GLFW_RELEASE) {
-		return;
-	}
-
-#ifdef _DEBUG_
-	printf("key %d, with action %d\n", key, action);
-	(void)fflush(NULL);
-#endif
-
-	switch(key) {
-	case GLFW_KEY_ESC:
-	case 'Q':
-	case 'q':
-		running = GL_FALSE;
-		break;
-	case 'S':
-	case 's':
-		// start/stop the simulation.
-		simulation = simulation == GL_TRUE ? GL_FALSE : GL_TRUE;
-		break;
-	case 'N':
-	case 'n':
-		// step one generation forwards.
-		break;
-	case 'P':
-	case 'p':
-		// step one generation backwards.
-		break;
-	default:
-		break;
-	}
-	
-}
-
-/**
- *
- */
-void processMouseClick(int button, int action)
-{
-	int x = 0;
-	int y = 0;
-
-	// only process on mouse click down.
-	if (action == GLFW_RELEASE) {
-		return;
-	} 
-
-	(void)glfwGetMousePos(&x, &y);
-
-//#ifdef _DEBUG_
-	printf("Button %d, with action %d on ", button, action);
-	printf("(%d, %d)\n", x, y);
-	(void)fflush(NULL);
-//#endif
-
-	boolean currentState = getCell(board, x, y);
-	boolean newState = currentState ? false : true;
-	printf("currentState: %d, setting newState: %d\n", currentState, newState);
-	fflush(NULL);
-	(void)setCell(board, x, y, newState);
-}
-
-/**
- *
- */
-static void renderBoard(LifeBoard *board, float scale)
-{
-	// quick sanity check.
-	assert(board != NULL);
-	assert(scale > 0.0f);
-
-	for(int x=0; x<board->boardSize; x++) {
-		for(int y=0; y<board->boardSize; y++) {
-			if(getCell(board, x, y) == true) {
-				renderSquare(x, y, scale);
-			}
-		}
-	}
-}
