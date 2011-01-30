@@ -147,11 +147,11 @@ void processMouseClick(int button, int action)
 
 	(void)glfwGetMousePos(&x, &y);
 
-//#ifdef _DEBUG_
+#ifdef _DEBUG_
 	printf("Button %d, with action %d on ", button, action);
 	printf("(%d, %d)\n", x, y);
 	(void)fflush(NULL);
-//#endif
+#endif
 
 	boolean currentState = getCell(board, x, y);
 	boolean newState = currentState ? false : true;
