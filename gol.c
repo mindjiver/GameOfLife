@@ -31,7 +31,7 @@
 #include "gol.h"
 
 #define TITLE   "Game of Life - the ressurection"
-#define VERSION "0.2"
+#define VERSION "0.2.1"
 #define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
