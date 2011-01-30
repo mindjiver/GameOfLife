@@ -115,6 +115,8 @@ boolean getCell(LifeBoard *lifeBoard, int x, int y)
 	}
 
 	else {
+		printf("Problems with x or y\n");
+		fflush(NULL);
 		return false;
 	}
 }
