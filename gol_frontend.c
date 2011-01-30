@@ -22,6 +22,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <GL/glfw.h>
 
 #include "gol_frontend.h"
@@ -42,6 +43,9 @@ static void renderSquare(int x, int y, float s)
 	float z = 0.0f;
 	float fX = (float)x * (s*1.0f);
 	float fY = (float)y * (s*1.0f);
+	float red = 0.0f;
+	float green = 0.0f;
+	float blue = 0.0f;
 
 #ifdef _DEBUG_
 	printf("[(%f, %f),",   fX,   fY);
@@ -51,7 +55,13 @@ static void renderSquare(int x, int y, float s)
 	(void)fflush(NULL);
 #endif
 	glBegin(GL_QUADS);
-	glColor3f(1.0f, 0.0f, 0.0f);
+
+	// perhaps make this more dynamic.
+	red =   (float)rand()/RAND_MAX;
+	green = (float)rand()/RAND_MAX;
+	blue =  (float)rand()/RAND_MAX;
+	glColor3f(red, green, blue);
+
 	glVertex3f(fX,   fY,   z); 
 	glVertex3f(fX+s, fY,   z);   
 	glVertex3f(fX+s, fY-s, z); 
