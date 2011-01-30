@@ -37,7 +37,7 @@
 #define MAXLEN 256
 
 // Uncomment and recompile to get debug traces.
-#define _DEBUG_ 
+//#define _DEBUG_ 
 
 extern int running;
 extern int step;
