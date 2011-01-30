@@ -31,7 +31,7 @@
 #include "gol.h"
 
 #define TITLE   "Game of Life - the ressurection"
-#define VERSION "0.3"
+#define VERSION "0.3.1"
 #define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
@@ -106,23 +106,24 @@ int main(int argc, char **argv)
 
 	int generation = 0;
 
+	sranddev();
+
 	while (running) {
 		
 		glfwPollEvents();
 		if (!glfwGetWindowParam(GLFW_OPENED)) {
 			return 0;
 		}
-		
-		(void)glClear(GL_COLOR_BUFFER_BIT);
-		renderBoard(board, s);
-		glfwSwapBuffers();
-			
+
 		// sleep and calculate next generation.
 		if (simulation) {
 #ifdef _DEBUG_
 			printf("Sleeping %f seconds.\n", sleepTime);
 			(void)fflush(NULL);
 #endif
+			(void)glClear(GL_COLOR_BUFFER_BIT);
+			renderBoard(board, s);
+			glfwSwapBuffers();
 			glfwSleep(sleepTime);
 			calculateLifeTorus(board);
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
