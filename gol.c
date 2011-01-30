@@ -39,7 +39,7 @@
 // Uncomment and recompile to get debug traces.
 #define _DEBUG_ 
 
-//extern int running;
+extern int running;
 extern int step;
 extern int simulation;
 extern float sleepTime;
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
 
 	int generation = 0;
 
-	while (1) {
+	while (running) {
 		
 		glfwPollEvents();
 		if (!glfwGetWindowParam(GLFW_OPENED)) {

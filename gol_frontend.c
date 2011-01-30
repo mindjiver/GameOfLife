@@ -99,7 +99,7 @@ void processKeyPress(int key, int action)
 	case GLFW_KEY_ESC:
 	case 'Q':
 	case 'q':
-		//running = GL_FALSE;
+		running = GL_FALSE;
 		break;
 	case 'S':
 	case 's':
