@@ -107,16 +107,14 @@ boolean getCell(LifeBoard *lifeBoard, int x, int y)
 	}
 
 	/* check that we stay inside the game matrix */
-	boolean xOk = (x - 1 >= 0) && (x + 1 < lifeBoard->boardSize) ? true : false;
-	boolean yOk = (y - 1 >= 0) && (y + 1 < lifeBoard->boardSize) ? true : false;
+	boolean xOk = (x >= 0) && (x < lifeBoard->boardSize) ? true : false;
+	boolean yOk = (y >= 0) && (y < lifeBoard->boardSize) ? true : false;
 
 	if (xOk && yOk) {
 		return lifeBoard->matrix[x][y];
 	}
 
 	else {
-		printf("Problems with x or y\n");
-		fflush(NULL);
 		return false;
 	}
 }
@@ -133,8 +131,8 @@ boolean setCell(LifeBoard *lifeBoard, int x, int y, boolean state)
 	}
 
 	/* check that we stay inside the game matrix */
-	boolean xOk = (x - 1 >= 0) && (x + 1 < lifeBoard->boardSize) ? true : false;
-	boolean yOk = (y - 1 >= 0) && (y + 1 < lifeBoard->boardSize) ? true : false;
+	boolean xOk = (x >= 0) && (x < lifeBoard->boardSize) ? true : false;
+	boolean yOk = (y >= 0) && (y < lifeBoard->boardSize) ? true : false;
 
 	if (xOk && yOk) {
 		lifeBoard->matrix[x][y] = state;

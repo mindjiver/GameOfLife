@@ -45,13 +45,13 @@ extern int simulation;
 extern float sleepTime;
 extern float sleepFactor;
 extern LifeBoard *board;
+extern float scaleFactor;
 
 static void printUsage(char *);
 
 int main(int argc, char **argv)
 {
-	int boardSize = 0.0;
-	float scaleFactor = 0.0f;
+	int boardSize = 0;
 	char windowTitle[MAXLEN];
 
 	if (argc < 4) {
@@ -77,7 +77,8 @@ int main(int argc, char **argv)
 
 	// we scale with 2 since we will move (0, 0) to the bottom
 	// left corner later.
-	int windowSize = boardSize * (int)scaleFactor * 2;
+	scaleFactor = scaleFactor * 2.0f;
+	int windowSize = boardSize * (int)scaleFactor;
 	board = createLifeBoard(boardSize);
 
 	if(!board) {
@@ -117,13 +118,13 @@ int main(int argc, char **argv)
 
 		// sleep and calculate next generation.
 		if (simulation) {
+			(void)glClear(GL_COLOR_BUFFER_BIT);
+			renderBoard(board, s);
+			glfwSwapBuffers();
 #ifdef _DEBUG_
 			printf("Sleeping %f seconds.\n", sleepTime);
 			(void)fflush(NULL);
 #endif
-			(void)glClear(GL_COLOR_BUFFER_BIT);
-			renderBoard(board, s);
-			glfwSwapBuffers();
 			glfwSleep(sleepTime);
 			calculateLifeTorus(board);
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",

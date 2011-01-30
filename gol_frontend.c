@@ -33,6 +33,7 @@ extern int simulation;
 extern float sleepTime;
 extern float sleepFactor;
 extern LifeBoard *board;
+extern float scaleFactor;
 
 /**
  *
@@ -155,17 +156,21 @@ void processMouseClick(int button, int action)
 		return;
 	} 
 
+	// we need to scale down the (x, y) coordinats to match the size of the internal
+	// board data structure.
 	(void)glfwGetMousePos(&x, &y);
+	x = x / (int)scaleFactor;
+	y = y / (int)scaleFactor;
+
+	boolean currentState = getCell(board, x, y);
+	boolean newState = currentState ? false : true;
+	(void)setCell(board, x, y, newState);
 
 //#ifdef _DEBUG_
 	printf("Button %d, with action %d on ", button, action);
 	printf("(%d, %d)\n", x, y);
+	printf("currentState: %d, setting newState: %d\n", currentState, newState);
 	(void)fflush(NULL);
 //#endif
 
-	boolean currentState = getCell(board, x, y);
-	boolean newState = currentState ? false : true;
-	printf("currentState: %d, setting newState: %d\n", currentState, newState);
-	(void)fflush(NULL);
-	(void)setCell(board, x, y, newState);
 }
