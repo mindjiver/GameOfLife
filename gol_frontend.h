@@ -23,9 +23,6 @@
 #ifndef __GOL_FRONTEND_H_
 #define __GOL_FRONTEND_H_
 
-#include <GL/glfw.h>
-
-#include "gol.h"
 #include "gol_backend.h"
 
 void processKeyPress(int, int);

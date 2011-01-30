@@ -22,9 +22,9 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <GL/glfw.h>
 
 #include "gol_frontend.h"
-#include "gol.h"
 
 extern int running;
 extern int step;
