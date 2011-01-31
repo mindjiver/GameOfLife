@@ -69,12 +69,10 @@ LifeBoard *createLifeBoard(int boardSize)
 	lifeBoard->matrix = createMatrix(boardSize);
 	lifeBoard->boardSize = boardSize;
 
-	srandom(42);
-
 	// Create a random initialisated board.
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
-			lifeBoard->matrix[x][y] = random() % 2;
+			lifeBoard->matrix[x][y] = rand() % 2;
 		}
 	}
 
