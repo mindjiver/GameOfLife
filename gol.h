@@ -27,12 +27,12 @@
 
 #include "gol_backend.h"
 
-int running = GL_TRUE;
-int step = GL_FALSE;
+int running =    GL_TRUE;
+int step =       GL_FALSE;
 int simulation = GL_TRUE;
-float sleepTime = 0.0f;
+float sleepTime =   0.0f;
 float sleepFactor = 0.0f;
-LifeBoard *board = NULL;
 float scaleFactor = 0.0f;
+LifeBoard *board =  NULL;
 
 #endif

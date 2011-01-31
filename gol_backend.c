@@ -354,7 +354,7 @@ void calculateLifeTorus(LifeBoard *LifeBoard)
 				}
 				
 				else {
-						newBoard[x][y] = LifeBoard->matrix[x][y];
+					newBoard[x][y] = LifeBoard->matrix[x][y];
 				}
 				
 			}

@@ -25,6 +25,12 @@
 
 #include "gol_backend.h"
 
+typedef struct Colour {
+	float red;
+	float green;
+	float blue;
+} Colour;
+
 void processKeyPress(int, int);
 void processMouseClick(int, int);
 void renderBoard(LifeBoard *, float);

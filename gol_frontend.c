@@ -39,14 +39,11 @@ extern float scaleFactor;
  *
  *
  */
-static void renderSquare(int x, int y, float s)
+static void renderSquare(int x, int y, float s, Colour c)
 {
 	float z = 0.0f;
 	float fX = (float)x * (s*1.0f);
 	float fY = (float)y * (s*1.0f);
-	float red = 0.0f;
-	float green = 0.0f;
-	float blue = 0.0f;
 
 #ifdef _DEBUG_
 	printf("[(%f, %f),",   fX,   fY);
@@ -56,13 +53,7 @@ static void renderSquare(int x, int y, float s)
 	(void)fflush(NULL);
 #endif
 	glBegin(GL_QUADS);
-
-	// perhaps make this more dynamic.
-	red =   (float)rand()/RAND_MAX;
-	green = (float)rand()/RAND_MAX;
-	blue =  (float)rand()/RAND_MAX;
-	glColor3f(red, green, blue);
-
+	glColor3f(c.red, c.green, c.blue);
 	glVertex3f(fX,   fY,   z); 
 	glVertex3f(fX+s, fY,   z);   
 	glVertex3f(fX+s, fY-s, z); 
@@ -77,6 +68,8 @@ static void renderSquare(int x, int y, float s)
  */
 void renderBoard(LifeBoard *board, float scale)
 {
+	Colour c = {0.0f, 0.0f, 0.0f};
+
 	// quick sanity check.
 	assert(board != NULL);
 	assert(scale > 0.0f);
@@ -84,10 +77,15 @@ void renderBoard(LifeBoard *board, float scale)
 	for(int x=0; x<board->boardSize; x++) {
 		for(int y=0; y<board->boardSize; y++) {
 			if(getCell(board, x, y) == true) {
-				renderSquare(x, y, scale);
+				c.red =   (float)rand()/RAND_MAX;
+				c.green = (float)rand()/RAND_MAX;
+				c.blue =  (float)rand()/RAND_MAX;
+				renderSquare(x, y, scale, c);
 			}
 		}
 	}
+
+	return;
 }
 
 /**
@@ -140,7 +138,8 @@ void processKeyPress(int key, int action)
 	default:
 		break;
 	}
-	
+
+	return;
 }
 
 /**
@@ -156,8 +155,8 @@ void processMouseClick(int button, int action)
 		return;
 	} 
 
-	// we need to scale down the (x, y) coordinats to match the size of the internal
-	// board data structure.
+	// we need to scale down the (x, y) coordinats to match the size of
+	// the internal board data structure.
 	(void)glfwGetMousePos(&x, &y);
 	x = x / (int)scaleFactor;
 	y = y / (int)scaleFactor;
@@ -169,8 +168,10 @@ void processMouseClick(int button, int action)
 //#ifdef _DEBUG_
 	printf("Button %d, with action %d on ", button, action);
 	printf("(%d, %d)\n", x, y);
-	printf("currentState: %d, setting newState: %d\n", currentState, newState);
+	printf("currentState: %d, setting newState: %d\n", currentState,
+	       newState);
 	(void)fflush(NULL);
 //#endif
 
+	return;
 }
