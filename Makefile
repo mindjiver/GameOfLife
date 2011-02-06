@@ -36,7 +36,7 @@ ifeq ($(OS), Linux)
 endif
 
 gol: gol.c
-	$(CC) $(CFLAGS) gol.c gol_frontend.c gol_backend.c $(LFLAGS) -o gol
+	$(CC) $(CFLAGS) gol.c gol_frontend.c gol_backend.c list.c $(LFLAGS) -o gol
 
 clean:
 	rm -Rf gol
