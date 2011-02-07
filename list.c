@@ -69,7 +69,7 @@ void addToCircularList(CircularList *list, void *data)
 	printf("Adding 0x%d\tto list 0x%d.\n", (int)data, (int)list);
 	fflush(NULL);
 //#endif
-//	list->nodes[list->next].value = data;
-// WTF? the pointer + 1 ? and then modulos the size of the list?
-//	list->next = list->next + 1 % list->size;
+	list->nodes[list->next].value = data;
+	// remove parenthesis for fun effects ;)
+	list->next = (list->next + 1) % list->size;
 }
