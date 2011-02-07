@@ -23,8 +23,7 @@
 OS := $(shell uname)
 
 ifeq ($(OS), Darwin)
-#        CC     = /usr/bin/gcc
-#        CC     = /Developer/usr/llvm-gcc-4.2/bin/llvm-gcc-4.2
+	SB     = /Developer/usr/clang+llvm-2.8-x86_64-apple-darwin10/scan-build
 	CC     = /Developer/usr/clang+llvm-2.8-x86_64-apple-darwin10/bin/clang
 	CFLAGS = -std=c99 -g -Wall -I/usr/local/include -L/usr/local/lib
 	LFLAGS = -lglfw -lm -lc -framework AGL -framework OpenGL -framework Cocoa
@@ -35,8 +34,11 @@ ifeq ($(OS), Linux)
 	LFLAGS = -lglfw -lm -lc
 endif
 
-gol: gol.c
+gol: 
 	$(CC) $(CFLAGS) gol.c gol_frontend.c gol_backend.c list.c $(LFLAGS) -o gol
+
+scan:
+	$(SB) $(CC) $(CFLAGS) gol.c gol_frontend.c gol_backend.c list.c $(LFLAGS) -o gol
 
 clean:
 	rm -Rf gol
