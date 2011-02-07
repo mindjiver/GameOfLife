@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2010 Peter Joensson <peter.joensson@gmail.com>
+ * Copyright (c) 2011 Peter Joensson <peter.joensson@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,7 @@ typedef struct CircularList
 	struct Node *nodes;
 } CircularList;
 
-CircularList *createCircularList(int);
+CircularList *createCircularList(unsigned int);
 void destroyCircularList(CircularList *);
 void addToCircularList(CircularList *, void *);
 

@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2010 Peter Joensson <peter.joensson@gmail.com>
+ * Copyright (c) 2011 Peter Joensson <peter.joensson@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,14 +29,14 @@
  *
  *
  */
-CircularList *createCircularList(int size)
+CircularList *createCircularList(unsigned int size)
 {
 	CircularList *list = NULL;
 
-//#ifdef _DEBUG_
-	printf("Creating a new circular list.\n");
+#ifdef _DEBUG_
+	printf("Creating a new circular list of size %d.\n", size);
 	fflush(NULL);
-//#endif
+#endif
 	
 	list = (CircularList *)malloc(sizeof(CircularList));
 	list->nodes = (Node *)malloc(sizeof(Node) * size);
@@ -52,11 +52,10 @@ CircularList *createCircularList(int size)
  */
 void destroyCircularList(CircularList *list)
 {
-//#ifdef _DEBUG_
+#ifdef _DEBUG_
 	printf("Deleting circular list 0x%d.\n", (int)list);
 	fflush(NULL);
-//#endif
-
+#endif
 	free(list->nodes);
 	free(list);
 	
@@ -65,11 +64,13 @@ void destroyCircularList(CircularList *list)
 
 void addToCircularList(CircularList *list, void *data)
 {
-//#ifdef _DEBUG_
+#ifdef _DEBUG_
 	printf("Adding 0x%d\tto list 0x%d.\n", (int)data, (int)list);
 	fflush(NULL);
-//#endif
+#endif
 	list->nodes[list->next].value = data;
 	// remove parenthesis for fun effects ;)
 	list->next = (list->next + 1) % list->size;
+
+	return;
 }

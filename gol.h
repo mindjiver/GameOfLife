@@ -31,8 +31,9 @@ int running =    GL_TRUE;
 int step =       GL_FALSE;
 int simulation = GL_TRUE;
 float sleepTime =   0.0f;
-float sleepFactor = 0.0f;
+float sleepFactor = 0.005f;
 float scaleFactor = 0.0f;
 LifeBoard *board =  NULL;
+CircularList *clist = NULL;
 
 #endif

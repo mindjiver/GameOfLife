@@ -48,6 +48,7 @@ extern float sleepTime;
 extern float sleepFactor;
 extern LifeBoard *board;
 extern float scaleFactor;
+extern CircularList *clist;
 
 static void printUsage(char *);
 
@@ -109,7 +110,7 @@ int main(int argc, char **argv)
 
 	int generation = 0;
 
-	CircularList *clist = createCircularList(10);
+	clist = createCircularList(10);
 
 	while (running) {
 		
@@ -123,10 +124,10 @@ int main(int argc, char **argv)
 			(void)glClear(GL_COLOR_BUFFER_BIT);
 			renderBoard(board, s);
 			glfwSwapBuffers();
-#ifdef _DEBUG_
+//#ifdef _DEBUG_
 			printf("Sleeping %f seconds.\n", sleepTime);
 			(void)fflush(NULL);
-#endif
+//#endif
 			glfwSleep(sleepTime);
 			// store old board in list.
 			addToCircularList(clist, board->matrix);
