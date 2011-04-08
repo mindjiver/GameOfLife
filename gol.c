@@ -76,8 +76,9 @@ int main(int argc, char **argv)
 	assert(sleepTime > 0);
 
 	// get the random juice flowing.
+#ifndef ARUN
 	sranddev();
-
+#endif
 	// we scale with 2 since we will move (0, 0) to the bottom
 	// left corner later.
 	scaleFactor = scaleFactor * 2.0f;
