@@ -263,7 +263,7 @@ void calculateLife(LifeBoard *lifeBoard)
 		}
 	}
 	
-	destroyMatrix(lifeBoard->matrix, lifeBoard->boardSize);
+	//destroyMatrix(lifeBoard->matrix, lifeBoard->boardSize);
 	lifeBoard->matrix = newBoard;
 
 }

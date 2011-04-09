@@ -124,15 +124,16 @@ int main(int argc, char **argv)
 			(void)glClear(GL_COLOR_BUFFER_BIT);
 			renderBoard(board, s);
 			glfwSwapBuffers();
-//#ifdef _DEBUG_
+#ifdef _DEBUG_
 			printf("Sleeping %f seconds.\n", sleepTime);
 			(void)fflush(NULL);
-//#endif
+#endif
 			glfwSleep(sleepTime);
 			// store old board in list.
 			addToCircularList(clist, board->matrix);
 			// calculate the new board.
 			calculateLifeTorus(board);
+			
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
 				 TITLE, generation);
 			glfwSetWindowTitle(windowTitle);
@@ -147,7 +148,7 @@ int main(int argc, char **argv)
 	// Cleanup before we leave.
 	glfwTerminate();
 	destroyCircularList(clist);
-	destroyLifeBoard(board);
+//	destroyLifeBoard(board);
 
 	return 0;
 }

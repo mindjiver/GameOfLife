@@ -26,6 +26,7 @@
 #include <GL/glfw.h>
 
 #include "gol_backend.h"
+#include "list.h"
 
 int running =    GL_TRUE;
 int step =       GL_FALSE;

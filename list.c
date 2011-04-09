@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "list.h"
 
@@ -40,6 +41,7 @@ CircularList *createCircularList(unsigned int size)
 	
 	list = (CircularList *)malloc(sizeof(CircularList));
 	list->nodes = (Node *)malloc(sizeof(Node) * size);
+	(void)memset(list->nodes, 0x0, (sizeof(Node) * size));
 	list->size = size;
 	list->next = 0;
 
@@ -56,6 +58,14 @@ void destroyCircularList(CircularList *list)
 	printf("Deleting circular list 0x%d.\n", (int)list);
 	fflush(NULL);
 #endif
+	for (int i=0; i<list->size; i++) {
+		Node n = list->nodes[i];
+		void *d = n.value;
+		if (d != NULL) {
+			printf("Freeing 0x%d\n", (int)n.value);
+			free(n.value);
+		}
+	}
 	free(list->nodes);
 	free(list);
 	
@@ -64,10 +74,10 @@ void destroyCircularList(CircularList *list)
 
 void addToCircularList(CircularList *list, void *data)
 {
-#ifdef _DEBUG_
+//#ifdef _DEBUG_
 	printf("Adding 0x%d\tto list 0x%d.\n", (int)data, (int)list);
 	fflush(NULL);
-#endif
+//#endif
 	list->nodes[list->next].value = data;
 	// remove parenthesis for fun effects ;)
 	list->next = (list->next + 1) % list->size;
