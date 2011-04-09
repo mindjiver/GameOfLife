@@ -27,6 +27,8 @@
 
 #include "gol_frontend.h"
 
+#define ARC4RANDOM_MAX      0x100000000
+
 extern int running;
 extern int step;
 extern int simulation;
@@ -77,9 +79,9 @@ void renderBoard(LifeBoard *board, float scale)
 	for(int x=0; x<board->boardSize; x++) {
 		for(int y=0; y<board->boardSize; y++) {
 			if(getCell(board, x, y) == true) {
-				c.red =   (float)rand()/RAND_MAX;
-				c.green = (float)rand()/RAND_MAX;
-				c.blue =  (float)rand()/RAND_MAX;
+				c.red =   (float)arc4random()/ARC4RANDOM_MAX;
+				c.green = (float)arc4random()/ARC4RANDOM_MAX;
+				c.blue =  (float)arc4random()/ARC4RANDOM_MAX;
 				renderSquare(x, y, scale, c);
 			}
 		}

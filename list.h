@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2010 Peter Joensson <peter.joensson@gmail.com>
+ * Copyright (c) 2011 Peter Joensson <peter.joensson@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,24 @@
  * THE SOFTWARE
  */
 
-#ifndef __GOL_H_
-#define __GOL_H_
+#ifndef __LIST_H_
+#define __LIST_H_
 
-#include <GL/glfw.h>
+typedef struct Node
+{
+	void *value;
+	struct Node *next;
+} Node;
 
-#include "gol_backend.h"
-#include "list.h"
+typedef struct CircularList
+{
+	unsigned int size;
+	unsigned int next;
+	struct Node *nodes;
+} CircularList;
 
-int running =    GL_TRUE;
-int step =       GL_FALSE;
-int simulation = GL_TRUE;
-float sleepTime =   0.0f;
-float sleepFactor = 0.005f;
-float scaleFactor = 0.0f;
-LifeBoard *board =  NULL;
-CircularList *clist = NULL;
+CircularList *createCircularList(unsigned int);
+void destroyCircularList(CircularList *);
+void addToCircularList(CircularList *, void *);
 
 #endif

@@ -72,7 +72,7 @@ LifeBoard *createLifeBoard(int boardSize)
 	// Create a random initialisated board.
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
-			lifeBoard->matrix[x][y] = rand() % 2;
+			lifeBoard->matrix[x][y] = arc4random() % 2;
 		}
 	}
 
@@ -263,7 +263,7 @@ void calculateLife(LifeBoard *lifeBoard)
 		}
 	}
 	
-	destroyMatrix(lifeBoard->matrix, lifeBoard->boardSize);
+	//destroyMatrix(lifeBoard->matrix, lifeBoard->boardSize);
 	lifeBoard->matrix = newBoard;
 
 }

@@ -30,6 +30,8 @@
 #include "gol_frontend.h"
 #include "gol.h"
 
+#include "list.h"
+
 #define TITLE   "Game of Life - the ressurection"
 #define VERSION "0.3.1"
 #define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
@@ -46,6 +48,7 @@ extern float sleepTime;
 extern float sleepFactor;
 extern LifeBoard *board;
 extern float scaleFactor;
+extern CircularList *clist;
 
 static void printUsage(char *);
 
@@ -111,6 +114,8 @@ int main(int argc, char **argv)
 
 	int generation = 0;
 
+	clist = createCircularList(10);
+
 	while (running) {
 		
 		glfwPollEvents();
@@ -128,7 +133,11 @@ int main(int argc, char **argv)
 			(void)fflush(NULL);
 #endif
 			glfwSleep(sleepTime);
+			// store old board in list.
+			addToCircularList(clist, board->matrix);
+			// calculate the new board.
 			calculateLifeTorus(board);
+			
 			snprintf(windowTitle, MAXLEN, "%s (%d generation)",
 				 TITLE, generation);
 			glfwSetWindowTitle(windowTitle);
@@ -142,7 +151,8 @@ int main(int argc, char **argv)
 
 	// Cleanup before we leave.
 	glfwTerminate();
-	destroyLifeBoard(board);
+	destroyCircularList(clist);
+//	destroyLifeBoard(board);
 
 	return 0;
 }
