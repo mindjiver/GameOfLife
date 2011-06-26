@@ -79,7 +79,7 @@ int main(int argc, char **argv)
 	assert(sleepTime > 0);
 
 	// get the random juice flowing.
-#ifdef BSD
+#ifdef __APPLE__
 	sranddev();
 #else
 	srandom(0x2a);

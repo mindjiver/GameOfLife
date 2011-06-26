@@ -79,7 +79,7 @@ void renderBoard(LifeBoard *board, float scale)
 	for(int x=0; x<board->boardSize; x++) {
 		for(int y=0; y<board->boardSize; y++) {
 			if(getCell(board, x, y) == true) {
-#ifdef BSD
+#ifdef __APPLE__
 				c.red =   (float)arc4random()/ARC4RANDOM_MAX;
 				c.green = (float)arc4random()/ARC4RANDOM_MAX;
 				c.blue =  (float)arc4random()/ARC4RANDOM_MAX;
