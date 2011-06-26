@@ -72,7 +72,11 @@ LifeBoard *createLifeBoard(int boardSize)
 	// Create a random initialisated board.
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
+#ifdef BSD
 			lifeBoard->matrix[x][y] = arc4random() % 2;
+#else
+			lifeBoard->matrix[x][y] = random() % 2;
+#endif
 		}
 	}
 

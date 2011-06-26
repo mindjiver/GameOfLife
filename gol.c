@@ -33,13 +33,13 @@
 #include "list.h"
 
 #define TITLE   "Game of Life - the ressurection"
-#define VERSION "0.3.1"
+#define VERSION "0.3.2"
 #define AUTHOR  "(c) Peter Jönsson (peter.joensson@gmail.com)"
 #define LICENSE "Licensed under the MIT License"
 #define MAXLEN 256
 
 // Uncomment and recompile to get debug traces.
-//#define _DEBUG_ 
+#define _DEBUG_ 
 
 extern int running;
 extern int step;
@@ -79,24 +79,32 @@ int main(int argc, char **argv)
 	assert(sleepTime > 0);
 
 	// get the random juice flowing.
-#ifndef ARUN
+#ifdef BSD
 	sranddev();
+#else
+	srandom(0x2a);
 #endif
 	// we scale with 2 since we will move (0, 0) to the bottom
 	// left corner later.
 	scaleFactor = scaleFactor * 2.0f;
 	int windowSize = boardSize * (int)scaleFactor;
 	board = createLifeBoard(boardSize);
-
+	
 	if(!board) {
+		printf("Not possible to allocate memory for game board, exiting.\n");
+		(void)fflush(NULL);
 		exit(EXIT_FAILURE);
 	}
 
 	if(!glfwInit()) {
+		printf("Failed to initilize OpenGL subsystem, exiting.\n");
+		(void)fflush(NULL);
 		exit(EXIT_FAILURE);
 	}
 
 	if(!glfwOpenWindow(windowSize, windowSize, 0,0,0,0,0,0, GLFW_WINDOW)) {
+		printf("Failed to open window, exiting.\n");
+		(void)fflush(NULL);
 		glfwTerminate();
 		exit(EXIT_FAILURE);
 	}
