@@ -43,3 +43,4 @@ scan:
 clean:
 	rm -Rf gol
 	rm -Rf gol.dSYM	
+	rm -Rf *~
