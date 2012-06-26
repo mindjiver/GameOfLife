@@ -69,6 +69,17 @@ LifeBoard *createLifeBoard(int boardSize)
 	lifeBoard->matrix = createMatrix(boardSize);
 	lifeBoard->boardSize = boardSize;
 
+	return lifeBoard;
+}
+
+void randomizeBoard(LifeBoard *lifeBoard)
+{
+	if (lifeBoard == NULL) {
+		return;
+	}
+
+	int boardSize = lifeBoard->boardSize;
+
 	// Create a random initialisated board.
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {
@@ -80,8 +91,8 @@ LifeBoard *createLifeBoard(int boardSize)
 		}
 	}
 
-	return lifeBoard;
 }
+
 	
 /**
  *
@@ -178,11 +189,7 @@ void calculateLife(LifeBoard *lifeBoard)
 	}
 
 	int boardSize = lifeBoard->boardSize;
-	boolean **newBoard = (boolean **)malloc(sizeof(boolean *) * boardSize);
-	
-	for (int i = 0; i < boardSize; i++) {
-		newBoard[i] = (boolean *)malloc(sizeof(boolean) * boardSize);
-	}
+	boolean **newBoard = createMatrix(boardSize);
 	
 	for (int x = 0; x < boardSize; x++) {
 		for (int y = 0; y < boardSize; y++) {

@@ -89,6 +89,7 @@ int main(int argc, char **argv)
 	scaleFactor = scaleFactor * 2.0f;
 	int windowSize = boardSize * (int)scaleFactor;
 	board = createLifeBoard(boardSize);
+	randomizeBoard(board);
 	
 	if(!board) {
 		printf("Not possible to allocate memory for game board, exiting.\n");

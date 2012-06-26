@@ -33,6 +33,7 @@ typedef struct LifeBoard
 
 LifeBoard *createLifeBoard(int);
 void destroyLifeBoard(LifeBoard *);
+void randomizeBoard(LifeBoard *);
 
 boolean getCell(LifeBoard *, int, int);
 boolean setCell(LifeBoard *, int, int, boolean);
